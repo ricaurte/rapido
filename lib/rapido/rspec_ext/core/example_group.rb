@@ -27,7 +27,7 @@ Rspec::Core::ExampleGroup.class_eval do
           end.all?
         rescue Exception => e
           if ordered_examples.size == counter
-            rapido_report_exceptions(e)
+            rapido_report_exception(e)
           else
             all_succeeded = false
             rapido_set_exceptions(ordered_examples, counter, e)
@@ -38,7 +38,7 @@ Rspec::Core::ExampleGroup.class_eval do
       end
     rescue Exception => e
       if ordered_examples.size == counter
-        rapido_report_exceptions(e)
+        rapido_report_exception(e)
       else
         all_succeeded = false
         rapido_set_exceptions(ordered_examples, counter, e)
@@ -59,7 +59,7 @@ Rspec::Core::ExampleGroup.class_eval do
     end
   end
 
-  def self.rapido_report_exceptions(exception)
+  def self.rapido_report_exception(exception)
     puts "Exception in example group: #{exception}"
     exception.backtrace.each{|line| puts "  #{line}"}
   end
