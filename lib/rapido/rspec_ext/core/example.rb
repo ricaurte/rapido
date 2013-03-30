@@ -2,22 +2,29 @@ Rspec::Core::Example.class_eval do
 
   attr_reader :rapido_reporter
 
-  def initialize_with_rapido(example_group_class, description, metadata, example_block=nil)
-    initialize_without_rapido(example_group_class, description, metadata, example_block)
-
-    if !@example_block.nil?
-      def @example_block.example
-        @_example
-      end
-
-      @example_block.set_instance_variable :"@_example", self
-    end
-  end
-  alias_method_chain :initialize, :rapido
 
   def run_with_rapido(example_group_instance, reporter)
-    @rapido_reporter = reporter
-    run_without_rapido(example_group_instance, report)
+    return run_without_rapido(example_group_instance, reporter) if !Rspec.rapido_enabled?
+
+    @example_group_instance = example_group_instance
+    @example_group_instance.example = self
+
+    start(reporter)
+    begin
+      @example_group_instance.instance_eval(&@example_block)
+    rescue Pending::PendingDeclaredInExample => e
+      @pending_declared_in_example = e.message
+    rescue Exception => e
+      set_exception(e)
+    ensure
+      begin
+        assign_generated_description
+      rescue Exception => e
+        set_exception(e, "while assigning the example description")
+      end
+    end
+
+    finish(reporter)
   end
   alias_method_chain :run, :rapido
 
