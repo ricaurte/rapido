@@ -2,7 +2,7 @@ Rspec::Core::ExampleGroup.class_eval do
 
 
   # @private
-  def self.run_examples_with_rapid0(reporter)
+  def self.run_examples_with_rapido(reporter)
     return run_examples_without_rapid(reporter) if !Rspec.rapido_enabled?
 
     instance = new
@@ -42,13 +42,14 @@ Rspec::Core::ExampleGroup.class_eval do
       else
         all_succeeded = false
         rapido_set_exceptions(ordered_examples, counter, e)
+      end
     end
     all_succeeded
   end
 
-    class << self
-      alias_method_chain :run_examples, :rapido
-    end
+  class << self
+    alias_method_chain :run_examples, :rapido
+  end
 
 
   def self.rapido_set_exceptions(ordered_examples, counter, exception)
