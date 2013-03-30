@@ -3,8 +3,18 @@ Rspec::Core::ExampleGroup.class_eval do
 
   # @private
   def self.run_examples_with_rapido(reporter)
-    return run_examples_without_rapid(reporter) if !Rspec.rapido_enabled?
+    if Rspec.rapido_enabled?
+      rapido_run_examples(reporter)
+    else
+      run_examples_without_rapid(reporter)
+    end
+  end
 
+  class << self
+    alias_method_chain :run_examples, :rapido
+  end
+
+  def self.rapido_run_examples(reporter)
     instance = new
     set_ivars(instance, before_all_ivars)
 
@@ -19,7 +29,7 @@ Rspec::Core::ExampleGroup.class_eval do
           all_succeeded = ordered_examples.map do |example|
             next if RSpec.wants_to_quit
 
-            succeeded = example.run(instance, reporter)
+            succeeded = example.rapido_run(instance, reporter)
 
             counter += 1
             RSpec.wants_to_quit = true if fail_fast? && !succeeded
@@ -45,10 +55,6 @@ Rspec::Core::ExampleGroup.class_eval do
       end
     end
     all_succeeded
-  end
-
-  class << self
-    alias_method_chain :run_examples, :rapido
   end
 
 

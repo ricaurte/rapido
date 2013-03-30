@@ -1,11 +1,6 @@
 Rspec::Core::Example.class_eval do
 
-  attr_reader :rapido_reporter
-
-
-  def run_with_rapido(example_group_instance, reporter)
-    return run_without_rapido(example_group_instance, reporter) if !Rspec.rapido_enabled?
-
+  def rapido_run(example_group_instance, reporter)
     @example_group_instance = example_group_instance
     @example_group_instance.example = self
 
@@ -26,6 +21,5 @@ Rspec::Core::Example.class_eval do
 
     finish(reporter)
   end
-  alias_method_chain :run, :rapido
 
 end
