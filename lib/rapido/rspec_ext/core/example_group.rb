@@ -1,16 +1,19 @@
-Rspec::Core::ExampleGroup.class_eval do
+RSpec::Core::ExampleGroup.class_eval do
+
+  class << self
+    alias_method :run_examples_without_rapido, :run_examples
+  end
 
   # @private
   def self.run_examples_with_rapido(reporter)
-    if Rspec.rapido_enabled?
+    if RSpec.rapido_enabled?
       rapido_run_examples(reporter)
     else
-      run_examples_without_rapid(reporter)
+      run_examples_without_rapido(reporter)
     end
   end
 
   class << self
-    alias_method :run_examples_without_rapido, :run_examples
     alias_method :run_examples, :run_examples_with_rapido
   end
 
@@ -19,13 +22,14 @@ Rspec::Core::ExampleGroup.class_eval do
     set_ivars(instance, before_all_ivars)
 
     all_succeeded = true
-    first_example = filtered_examples.first
-    counter = 0
     ordered_examples = filtered_examples.ordered
+    first_example = ordered_examples.first
+    counter = 0
     begin
-      first_example.with_around_each_hooks do
+      first_example.instance_variable_set(:"@example_group_instance", instance)
+      first_example.send :with_around_each_hooks do
         begin
-          first_example.run_before_each
+          first_example.send :run_before_each
           all_succeeded = ordered_examples.map do |example|
             next if RSpec.wants_to_quit
 
@@ -40,29 +44,30 @@ Rspec::Core::ExampleGroup.class_eval do
             rapido_report_exception(e)
           else
             all_succeeded = false
-            rapido_set_exceptions(ordered_examples, counter, e)
+            rapido_set_exceptions(reporter, ordered_examples, counter, e)
           end
         ensure
-          first_example.run_after_each
+          first_example.send :run_after_each
         end
       end
     rescue Exception => e
       if ordered_examples.size == counter
         rapido_report_exception(e)
       else
+        rapido_report_exception(e)
         all_succeeded = false
-        rapido_set_exceptions(ordered_examples, counter, e)
+        rapido_set_exceptions(reporter, ordered_examples, counter, e)
       end
-    end
+    end if !first_example.nil?
     all_succeeded
   end
 
 
-  def self.rapido_set_exceptions(ordered_examples, counter, exception)
+  def self.rapido_set_exceptions(reporter, ordered_examples, counter, exception)
     ordered_examples[counter..-1].each do |example|
-      example.start(reporter)
+      example.send(:start, reporter)
       example.set_exception(exception)
-      example.finish(reporter)
+      example.send(:finish, reporter)
     end
   end
 

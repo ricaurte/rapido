@@ -1,4 +1,4 @@
-module Rspec
+module RSpec
 
   def self.rapido_enabled?
     @rapido_enabled
@@ -14,4 +14,4 @@ module Rspec
 
 end
 
-ENV['RAPIDO'] == true ? Rspec.enable_rapido : Rspec.disable_rapido
+ENV['RAPIDO'] == true ? RSpec.enable_rapido : RSpec.disable_rapido

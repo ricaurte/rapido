@@ -5,5 +5,6 @@ module Rapido
   # Your code goes here...
 end
 
+require 'rapido/rspec_ext/rspec'
 require 'rapido/rspec_ext/core/example'
 require 'rapido/rspec_ext/core/example_group'

@@ -1,4 +1,4 @@
-Rspec::Core::Example.class_eval do
+RSpec::Core::Example.class_eval do
 
   def rapido_run(example_group_instance, reporter)
     @example_group_instance = example_group_instance
@@ -7,7 +7,7 @@ Rspec::Core::Example.class_eval do
     start(reporter)
     begin
       @example_group_instance.instance_eval(&@example_block)
-    rescue Pending::PendingDeclaredInExample => e
+    rescue RSpec::Core::Pending::PendingDeclaredInExample => e
       @pending_declared_in_example = e.message
     rescue Exception => e
       set_exception(e)
