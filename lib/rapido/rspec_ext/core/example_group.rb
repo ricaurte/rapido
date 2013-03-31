@@ -1,6 +1,5 @@
 Rspec::Core::ExampleGroup.class_eval do
 
-
   # @private
   def self.run_examples_with_rapido(reporter)
     if Rspec.rapido_enabled?
@@ -11,7 +10,8 @@ Rspec::Core::ExampleGroup.class_eval do
   end
 
   class << self
-    alias_method_chain :run_examples, :rapido
+    alias_method :run_examples_without_rapido, :run_examples
+    alias_method :run_examples, :run_examples_with_rapido
   end
 
   def self.rapido_run_examples(reporter)
