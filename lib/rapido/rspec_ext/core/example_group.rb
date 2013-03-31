@@ -27,6 +27,7 @@ RSpec::Core::ExampleGroup.class_eval do
     counter = 0
     begin
       first_example.instance_variable_set(:"@example_group_instance", instance)
+      instance.example = first_example
       first_example.send :with_around_each_hooks do
         begin
           first_example.send :run_before_each

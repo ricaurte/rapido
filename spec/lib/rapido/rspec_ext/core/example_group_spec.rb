@@ -4,8 +4,13 @@ require 'spec/spec_helper'
 module RSpec::Core
   describe ExampleGroup do
 
+    let(:world) { w = World.new; w.stub(filter_manager: filter_manager); w }
+    let(:filter_manager) { FilterManager.new }
+
     let(:example_group) { RSpec::Core::ExampleGroup.describe }
     let(:reporter) { RSpec::Core::Configuration.new.reporter }
+
+    class RapidlyExceptioning < Exception; end
 
     describe ".rapido_run_examples" do
 
@@ -63,16 +68,6 @@ module RSpec::Core
 
         let(:example_group) do
           RSpec::Core::ExampleGroup.describe do
-
-            before do
-
-            end
-
-          end
-        end
-
-        let(:example_group) do
-          RSpec::Core::ExampleGroup.describe do
             let!(:count) do
               @count ||= 0
               @count += 1
@@ -109,10 +104,6 @@ module RSpec::Core
 
       context "an exception occurs before the examples run" do
 
-        class RapidlyExceptioning < Exception; end
-
-        let(:world) { w = World.new; w.stub(filter_manager: filter_manager); w }
-        let(:filter_manager) { FilterManager.new }
         let(:example_group) do
           group = RSpec::Core::ExampleGroup.describe do
 
@@ -150,6 +141,28 @@ module RSpec::Core
         it "should give both the same exception" do
           example_group.examples.first.exception.should == example_group.examples[1].exception
         end
+
+      end
+
+      context "retrieving meta data in the before" do
+
+        let(:example_group) do
+          RSpec::Core::ExampleGroup.describe do
+
+            before do
+              @metadata = example.metadata
+            end
+
+            it("hello!", meta: :stuff) { @metadata[:meta].should == :stuff }
+
+          end
+        end
+
+        before do
+          example_group.rapido_run_examples(reporter)
+        end
+
+        it { example_group.filtered_examples[0].exception.should == nil }
 
       end
 
