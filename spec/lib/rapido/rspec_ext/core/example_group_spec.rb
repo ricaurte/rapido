@@ -14,9 +14,56 @@ module RSpec::Core
 
     describe ".rapido_run_examples" do
 
-      context "example group has no examples" do
+      context "example group not sent a block" do
+
+        let(:example_group) do
+          RSpec::Core::ExampleGroup.describe
+        end
+
+        before do
+          example_group.rapido_run_examples(reporter)
+        end
+
+        it { example_group.examples.count.should == 0 }
 
       end
+
+      context "example group has no examples in a block" do
+
+        let(:example_group) do
+          RSpec::Core::ExampleGroup.describe do
+          end
+        end
+
+        before do
+          example_group.rapido_run_examples(reporter)
+        end
+
+        it { example_group.examples.count.should == 0 }
+
+      end
+
+      context "example group has examples without blocks" do
+
+        let(:example_group) do
+          RSpec::Core::ExampleGroup.describe do
+            it "should be pending"
+            it "should also be pending"
+          end
+        end
+
+        before do
+          example_group.rapido_run_examples(reporter)
+        end
+
+        it { example_group.examples.count.should == 2 }
+        it { example_group.examples[0].exception.should == nil }
+        it { example_group.examples[0].pending.should == "Not yet implemented" }
+        it { example_group.examples[1].exception.should == nil }
+        it { example_group.examples[1].pending.should == "Not yet implemented" }
+
+      end
+
 
       context "example group has simple examples" do
 

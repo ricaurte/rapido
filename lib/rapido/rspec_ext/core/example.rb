@@ -17,7 +17,7 @@ RSpec::Core::Example.class_eval do
       rescue Exception => e
         set_exception(e, "while assigning the example description")
       end
-    end
+    end unless pending
 
     finish(reporter)
   end
