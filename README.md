@@ -1,6 +1,10 @@
 # Rapido
 
-Slow tests suck, and rapido makes them faster so you can make more descriptive tests!  Rapido extends Rspec so that you can have specs that run fast and are also very descriptive.  Use the ex method like it, but instead of creating a new context, it will run in the existing context.
+Rapido makes it so you don't have to wait forever for your test suite when you follow the better specs guidelines and do one assertion per it.  Rapido extends Rspec so that you can have specs that run fast and are also very descriptive.  Use your existing test suite with no or minor modifications and just run
+
+    RAPIDO=true rspec spec
+
+And see your tests run much faster, up to 5-6x faster!
 
 ## Installation
 
@@ -18,7 +22,25 @@ Or install it yourself as:
 
 ## Usage
 
-TODO: Write usage instructions here
+In order to make your test suite rapido compatible, you need to make sure that the code you put inside of your it assertions in rspec do not cause any side effects as your it's will all run inside of the same context instead of having the context instance variables reset.
+
+    # Good
+    before do
+      @number = 1
+    end
+
+    it { @number.should == 1 }
+
+    # Bad
+    before do
+      @number = 1
+    end
+
+    it do
+      @number = 4
+      @number.should == 4
+    end
+    it { @number.should == 1 } # will fail
 
 ## Contributing
 
