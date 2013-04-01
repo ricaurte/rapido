@@ -22,7 +22,7 @@ Or install it yourself as:
 
 ## Usage
 
-In order to make your test suite rapido compatible, you need to make sure that the code you put inside of your it assertions in rspec do not cause any side effects as your it's will all run inside of the same context instead of having the context instance variables reset.
+In order to make your test suite rapido compatible, you need to make sure that the code you put inside of your it assertions in rspec do not cause any side effects.  To make your tests faster rapido will run all your it's  inside of the same context or describe without reseting the instance variables, instead of having the context instance variables reset. It is nested context compatible.
 
     # Good
     before do
